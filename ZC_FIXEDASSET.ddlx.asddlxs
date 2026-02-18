@@ -1,0 +1,158 @@
+@Metadata.layer: #CORE
+@UI: {
+  headerInfo: {
+    typeName: 'Fixed Asset',
+    typeNamePlural: 'Fixed Assets',
+    title: {
+      type: #STANDARD,
+      value: 'AssetDescription'
+    },
+    description: {
+      value: 'AssetMainNumber'
+    }
+  }
+}
+annotate view ZC_FIXEDASSET with
+{
+  @UI.facet: [
+    {
+      id: 'GeneralInformation',
+      purpose: #STANDARD,
+      type: #IDENTIFICATION_REFERENCE,
+      label: 'General Information',
+      position: 10
+    },
+    {
+      id: 'OrganizationalData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Organizational Data',
+      targetQualifier: 'OrganizationalData',
+      position: 20
+    },
+    {
+      id: 'DepreciationAreas',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Depreciation Areas',
+      targetElement: '_DepreciationAreas',
+      position: 30
+    },
+    {
+      id: 'TimeDependentData',
+      purpose: #STANDARD,
+      type: #LINEITEM_REFERENCE,
+      label: 'Time-Dependent Allocations',
+      targetElement: '_TimeDependentData',
+      position: 40
+    },
+    {
+      id: 'AdministrativeData',
+      purpose: #STANDARD,
+      type: #FIELDGROUP_REFERENCE,
+      label: 'Administrative Data',
+      targetQualifier: 'AdministrativeData',
+      position: 50
+    }
+  ]
+
+  @UI.hidden: true
+  AssetUUID;
+
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.identification: [{ position: 10 }]
+  @UI.selectionField: [{ position: 10 }]
+  CompanyCode;
+
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
+  @UI.identification: [{ position: 20 }]
+  AssetMainNumber;
+
+  @UI.lineItem: [{ position: 30, importance: #HIGH }]
+  @UI.identification: [{ position: 30 }]
+  AssetSubNumber;
+
+  @UI.lineItem: [{ position: 40, importance: #HIGH }]
+  @UI.identification: [{ position: 40 }]
+  @UI.selectionField: [{ position: 20 }]
+  AssetClass;
+
+  @UI.lineItem: [{ position: 50, importance: #HIGH }]
+  @UI.identification: [{ position: 50 }]
+  AssetDescription;
+
+  @UI.identification: [{ position: 60 }]
+  AssetLongText;
+
+  @UI.identification: [{ position: 70, label: 'Business Area' }]
+  @UI.fieldGroup: [{ qualifier: 'OrganizationalData', position: 10 }]
+  BusinessArea;
+
+  @UI.lineItem: [{ position: 60, importance: #MEDIUM }]
+  @UI.identification: [{ position: 80, label: 'Plant' }]
+  @UI.selectionField: [{ position: 30 }]
+  @UI.fieldGroup: [{ qualifier: 'OrganizationalData', position: 20 }]
+  Plant;
+
+  @UI.identification: [{ position: 90 }]
+  Quantity;
+
+  @UI.identification: [{ position: 100 }]
+  UnitOfMeasure;
+
+  @UI.identification: [{ position: 110 }]
+  InventoryNumber;
+
+  @UI.identification: [{ position: 120 }]
+  LastInventoryDate;
+
+  @UI.identification: [{ position: 130 }]
+  AssetIsGroup;
+
+  @UI.identification: [{ position: 140 }]
+  AssetIsLowValueAsset;
+
+  @UI.identification: [{ position: 150 }]
+  AssetIsComplete;
+
+  @UI.lineItem: [{ position: 70, importance: #MEDIUM }]
+  @UI.identification: [{ position: 160 }]
+  AcquisitionDate;
+
+  @UI.identification: [{ position: 170 }]
+  Manufacturer;
+
+  @UI.identification: [{ position: 180 }]
+  CountryOfOrigin;
+
+  @UI.identification: [{ position: 190 }]
+  TypeDesignation;
+
+  @UI.identification: [{ position: 200 }]
+  LeasingStartYear;
+
+  @UI.identification: [{ position: 210 }]
+  LeasingStartPeriod;
+
+  @UI.identification: [{ position: 220 }]
+  InsuranceType;
+
+  @UI.identification: [{ position: 230 }]
+  LandParcelNumber;
+
+  @UI.lineItem: [{ position: 80, importance: #LOW }]
+  @UI.fieldGroup: [{ qualifier: 'AdministrativeData', position: 10 }]
+  CreationDate;
+
+  @UI.fieldGroup: [{ qualifier: 'AdministrativeData', position: 20 }]
+  CreatedBy;
+
+  @UI.fieldGroup: [{ qualifier: 'AdministrativeData', position: 30 }]
+  LastChangedDate;
+
+  @UI.fieldGroup: [{ qualifier: 'AdministrativeData', position: 40 }]
+  LastChangedBy;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

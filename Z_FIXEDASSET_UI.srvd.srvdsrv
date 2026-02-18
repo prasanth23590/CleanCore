@@ -1,0 +1,13 @@
+@EndUserText.label: 'Fixed Asset Management Service'
+define service Z_FIXEDASSET_UI {
+  expose ZC_FIXEDASSET            as FixedAsset;
+  expose ZC_FIXEDASSET_DEPAREA    as DepreciationArea;
+  expose ZC_FIXEDASSET_TIMEDEPA   as TimeDependentData;
+  expose I_CompanyCode            as CompanyCode;
+  expose I_AssetClass             as AssetClass;
+  expose I_Plant                  as Plant;
+  expose I_CostCenter             as CostCenter;
+  expose I_ProfitCenter           as ProfitCenter;
+  expose I_DepreciationArea       as DepreciationAreaVH;
+  expose I_BusinessArea           as BusinessArea;
+}

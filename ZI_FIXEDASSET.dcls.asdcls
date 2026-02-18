@@ -1,0 +1,11 @@
+@EndUserText.label: 'Fixed Asset - Access Control'
+@MappingRole: true
+define role ZI_FIXEDASSET {
+  grant select on ZI_FIXEDASSET
+    where
+      // Company code authorization - F_ANLA_BUK
+      (CompanyCode) = aspect pfcg_auth(F_ANLA_BUK, BUKRS, ACTVT = '03')
+      // Asset class authorization can be added if needed
+      // and (AssetClass) = aspect pfcg_auth(F_ANLA_ART, ANLKL, ACTVT = '03')
+      ;
+}

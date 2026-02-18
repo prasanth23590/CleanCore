@@ -1,0 +1,256 @@
+managed implementation in class zcl_bp_i_fixedasset unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_FIXEDASSET alias FixedAsset
+persistent table anla
+draft table zfixedasset_d
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+early numbering
+{
+  // Managed standard operations
+  create;
+  update;
+  delete;
+
+  // Draft actions
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation validateCompanyCode;
+    validation validateAssetClass;
+  }
+
+  // Field properties
+  field ( readonly )
+  AssetUUID,
+  CreationDate,
+  CreatedBy,
+  LastChangedDate,
+  LastChangedBy,
+  LocalLastChangedAt;
+
+  field ( numbering : managed )
+  AssetMainNumber;
+
+  field ( mandatory )
+  CompanyCode,
+  AssetClass,
+  AssetDescription;
+
+  // Validations (executed on save)
+  validation validateCompanyCode on save
+  {
+    field CompanyCode;
+  }
+
+  validation validateAssetClass on save
+  {
+    field AssetClass, CompanyCode;
+  }
+
+  validation validatePlant on save
+  {
+    field Plant, CompanyCode;
+  }
+
+  validation validateAssetDescription on save
+  {
+    field AssetDescription;
+  }
+
+  // Determinations (executed on modify)
+  determination determineAssetNumber on modify
+  {
+    field CompanyCode, AssetClass;
+    create;
+  }
+
+  determination determineDefaultValues on modify
+  {
+    field AssetClass;
+    create;
+  }
+
+  determination calculateUUID on save
+  {
+    field CompanyCode, AssetMainNumber, AssetSubNumber;
+    create;
+    update;
+  }
+
+  // Actions
+  action copyFromReference parameter ZA_CopyAssetParameters result [1] $self;
+  action postCapitalization result [1] $self;
+
+  // Composition: Depreciation Areas
+  association _DepreciationAreas { create; with draft; }
+
+  // Composition: Time-Dependent Data
+  association _TimeDependentData { create; with draft; }
+
+  // Mapping to database table
+  mapping for anla
+  {
+    CompanyCode = bukrs;
+    AssetMainNumber = anln1;
+    AssetSubNumber = anln2;
+    AssetClass = anlkl;
+    AssetDescription = txt50;
+    AssetLongText = txt50_lc;
+    BusinessArea = gsber;
+    Plant = werks;
+    Quantity = menge;
+    UnitOfMeasure = meins;
+    InventoryNumber = invnr;
+    LastInventoryDate = invzu;
+    AssetIsGroup = ord41;
+    AssetIsLowValueAsset = ord42;
+    AssetIsComplete = ord43;
+    AcquisitionDate = zugdt;
+    Manufacturer = herst;
+    CountryOfOrigin = herld;
+    TypeDesignation = typbz;
+    LeasingStartYear = urjah;
+    LeasingStartPeriod = urpeh;
+    InsuranceType = vers;
+    LandParcelNumber = eaufn;
+    CreationDate = erdat;
+    CreatedBy = ernam;
+    LastChangedDate = aedat;
+    LastChangedBy = aenam;
+  }
+}
+
+// Child behavior: Depreciation Areas
+define behavior for ZI_FIXEDASSET_DEPAREA alias DepreciationArea
+persistent table anlb
+draft table zfixedasset_da_d
+etag master LocalLastChangedAt
+lock dependent by _FixedAsset
+authorization dependent by _FixedAsset
+{
+  update;
+  delete;
+
+  field ( readonly )
+  DepAreaUUID,
+  CompanyCode,
+  AssetMainNumber,
+  AssetSubNumber;
+
+  field ( mandatory )
+  DepreciationArea,
+  UsefulLifeYears,
+  DepreciationKey;
+
+  // Validations
+  validation validateDepreciationArea on save
+  {
+    field DepreciationArea;
+  }
+
+  validation validateUsefulLife on save
+  {
+    field UsefulLifeYears, UsefulLifePeriods;
+  }
+
+  validation validateCapitalizationDate on save
+  {
+    field AssetCapitalizationDate;
+  }
+
+  // Determination
+  determination calculateDepAreaUUID on save
+  {
+    field CompanyCode, AssetMainNumber, AssetSubNumber, DepreciationArea;
+    create;
+    update;
+  }
+
+  // Association to parent
+  association _FixedAsset { with draft; }
+
+  mapping for anlb
+  {
+    CompanyCode = bukrs;
+    AssetMainNumber = anln1;
+    AssetSubNumber = anln2;
+    DepreciationArea = afaber;
+    UsefulLifeYears = ndjar;
+    UsefulLifePeriods = ndper;
+    DepreciationKey = afasl;
+    ScrapValue = answt;
+    AssetCapitalizationDate = aktiv;
+    AssetShutdownDate = deakt;
+    InvestmentSupport = invnr;
+    InterestCalculationIndicator = zinsz;
+    DepreciationStartDate = afabg;
+  }
+}
+
+// Child behavior: Time-Dependent Data
+define behavior for ZI_FIXEDASSET_TIMEDEPA alias TimeDependentData
+persistent table anlz
+draft table zfixedasset_td_d
+etag master LocalLastChangedAt
+lock dependent by _FixedAsset
+authorization dependent by _FixedAsset
+{
+  update;
+  delete;
+
+  field ( readonly )
+  TimeDependentUUID,
+  CompanyCode,
+  AssetMainNumber,
+  AssetSubNumber;
+
+  field ( mandatory )
+  ValidityStartDate;
+
+  // Validations
+  validation validateValidityPeriod on save
+  {
+    field ValidityStartDate, ValidityEndDate;
+  }
+
+  validation validateCostCenter on save
+  {
+    field CostCenter;
+  }
+
+  // Determination
+  determination calculateTimeDependentUUID on save
+  {
+    field CompanyCode, AssetMainNumber, AssetSubNumber, ValidityStartDate;
+    create;
+    update;
+  }
+
+  // Association to parent
+  association _FixedAsset { with draft; }
+
+  mapping for anlz
+  {
+    CompanyCode = bukrs;
+    AssetMainNumber = anln1;
+    AssetSubNumber = anln2;
+    ValidityStartDate = bdatu;
+    ValidityEndDate = adatu;
+    CostCenter = kostl;
+    ProfitCenter = prctr;
+    WBSElement = ps_psp_pnr;
+    InternalOrder = aufnr;
+    AssetLocation = stort;
+    RoomNumber = raumn;
+    PersonResponsible = answt_drc;
+    Segment = segment;
+    FunctionalArea = fkber;
+  }
+}
